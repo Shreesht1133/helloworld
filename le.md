@@ -487,6 +487,40 @@ Once the pipeline view is created, the process will automatically run: Build, Te
 
 
 ###### Jenkins scripted pipeline
+node {
+
+    stage('Checkout Code') {
+        echo "Cloning repository from GitHub..."
+        git branch: 'main',
+            url: 'https://github.com/your-username/your-repository.git'
+    }
+
+    stage('Build') {
+        echo "Running Maven build..."
+        sh "mvn clean install"
+    }
+
+    stage('Run Tests') {
+        echo "Executing Unit Tests..."
+        sh "mvn test"
+    }
+
+    stage('Archive Artifacts') {
+        echo "Archiving JAR/WAR files and test reports..."
+        
+        // archive compiled build files (jar/war)
+        archiveArtifacts artifacts: "target/*.jar, target/*.war", fingerprint: true
+        
+        // publish JUnit XML test results
+        junit '**/target/surefire-reports/*.xml'
+    }
+
+    stage('Post Build Cleanup') {
+        echo "Cleaning workspace..."
+        cleanWs()
+    }
+}
+
 
 1\. Creating a New Item: On the Jenkins dashboard, the user clicks on the "new item" option.
 
@@ -1257,6 +1291,7 @@ Which one should I do next?
 No file chosenNo file chosen
 
 ChatGPT can make mistakes. Check important info. See Cookie Preferences.
+
 
 
 
